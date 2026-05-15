@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Add Task - Task Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4">
+                <h4 class="mb-4 text-primary">
+                    <i class="bi bi-plus-circle"></i> Add New Task
+                </h4>
+                
+                <form method="POST" action="{{ url_for('add_task') }}" id="taskForm">
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Task Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g., Submit Q3 Report" required>
+                    </div>
+                    
+                    <!-- Description (ML uses this) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Description <span class="text-muted fw-normal">(ML analyzes this text)</span>
+                        </label>
+                        <textarea name="description" id="description" class="form-control" rows="3" 
+                                  placeholder="e.g., urgent deadline critical meeting with client" required></textarea>
+                        <small class="text-muted">Use words like 'urgent', 'critical', 'asap' for high priority</small>
+                    </div>
+                    
+                    <!-- Deadline -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deadline</label>
+                        <input type="datetime-local" name="deadline" id="deadline" class="form-control" required>
+                    </div>
+                    
+                    <!-- ML Preview Box -->
+                    <div id="mlPreview" class="alert alert-info d-none mb-3">
+                        <i class="bi bi-robot"></i> <strong>ML Prediction:</strong> 
+                        <span id="mlText">Analyzing...</span>
+                    </div>
+                    
+                    <!-- Manual Priority Override -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Priority</label>
+                        <select name="manual_priority" class="form-select">
+                            <option value="">Let ML Auto-Decide (Recommended)</option>
+                            <option value="3">High Priority</option>
+                            <option value="2">Medium Priority</option>
+                            <option value="1">Low Priority</option>
+                        </select>
+                        <small class="text-muted">Leave empty to use ML prediction based on description + deadline</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Add Task
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-set default deadline to tomorrow same time
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    now.setDate(now.getDate() + 1);
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('deadline').value = now.toISOString().slice(0, 16);
+});
+
+// Live ML Preview (calls backend API when user stops typing)
+let debounceTimer;
+const descInput = document.getElementById('description');
+const deadlineInput = document.getElementById('deadline');
+const previewBox = document.getElementById('mlPreview');
+const mlText = document.getElementById('mlText');
+
+function updatePreview() {
+    const desc = descInput.value.trim();
+    const deadline = deadlineInput.value;
+    
+    if (desc.length < 5 || !deadline) {
+        previewBox.classList.add('d-none');
+        return;
+    }
+    
+    fetch('/api/preview-priority', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({description: desc, deadline: deadline})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.priority_label) {
+            previewBox.classList.remove('d-none');
+            previewBox.className = `alert mb-3 alert-${data.priority === 3 ? 'danger' : data.priority === 2 ? 'warning' : 'success'}`;
+            mlText.innerHTML = `${data.priority_label} Priority (${data.confidence}% confidence)`;
+        }
+    })
+    .catch(() => {
+        previewBox.classList.add('d-none');
+    });
+}
+
+descInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updatePreview, 800);  // Wait 800ms after typing stops
+});
+
+deadlineInput.addEventListener('change', updatePreview);
+</script>
+{% endblock %}

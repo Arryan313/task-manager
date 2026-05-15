@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Edit Task - Task Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4">
+                <h4 class="mb-4 text-warning">
+                    <i class="bi bi-pencil-square"></i> Edit Task
+                </h4>
+                
+                <form method="POST" action="{{ url_for('edit_task', task_id=task.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Task Title</label>
+                        <input type="text" name="title" class="form-control" value="{{ task.title }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" rows="3" required>{{ task.description }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Deadline</label>
+                        <input type="datetime-local" name="deadline" class="form-control" value="{{ deadline_str }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Priority</label>
+                        <select name="priority" class="form-select">
+                            <option value="1" {% if task.priority == 1 %}selected{% endif %}>Low Priority</option>
+                            <option value="2" {% if task.priority == 2 %}selected{% endif %}>Medium Priority</option>
+                            <option value="3" {% if task.priority == 3 %}selected{% endif %}>High Priority</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg text-dark">
+                            <i class="bi bi-check-circle"></i> Update Task
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

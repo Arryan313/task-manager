@@ -1,0 +1,72 @@
+/* Custom Styles for Intelligent Task Manager */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Priority Badge Animations */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
+}
+
+/* Card Hover Effect */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Overdue Pulse Animation */
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.border-danger.border-2 {
+    animation: pulse-red 2s infinite;
+}
+
+/* Form Focus States */
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button Hover Enhancements */
+.btn {
+    transition: all 0.2s;
+}
+
+/* ML Preview Box */
+#mlPreview {
+    border-left: 4px solid;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .display-1 {
+        font-size: 3rem;
+    }
+}
