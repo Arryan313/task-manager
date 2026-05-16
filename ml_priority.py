@@ -1,8 +1,3 @@
-# ml_priority.py - Machine Learning Auto-Prioritization Engine
-# -------------------------------------------------------------
-# Uses Naive Bayes text classification on task descriptions
-# Combined with deadline urgency scoring for final priority
-
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline

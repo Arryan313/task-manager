@@ -1,8 +1,3 @@
-# app.py - Main Flask Application for Intelligent Task Manager
-# -------------------------------------------------------------
-# This file handles: routes, database, authentication, and task CRUD
-# It connects the ML model to auto-prioritize tasks based on description + deadline
-
 try:
     from flask import Flask, render_template, redirect, url_for, flash, request, jsonify  # type: ignore[import]
     from flask_sqlalchemy import SQLAlchemy  # type: ignore[import]
